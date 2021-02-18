@@ -2,10 +2,12 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using Marten.Linq.Filters;
 using Marten.Linq.Parsing;
 using Marten.Linq.SqlGeneration;
 using Marten.Util;
+using Newtonsoft.Json;
 
 namespace Marten.Linq.Fields
 {
@@ -29,7 +31,8 @@ namespace Marten.Linq.Fields
             }
 
             parentLocator = locator;
-            lastMemberName = lastMember.Name.FormatCase(casing);
+
+            lastMemberName = lastMember.TryGetJsonAttributePropertyName(out var attributePropertyName) ? attributePropertyName : lastMember.Name.FormatCase(casing);
 
             RawLocator = TypedLocator = $"{parentLocator} ->> '{lastMemberName}'";
 

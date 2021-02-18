@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Baseline;
+using Newtonsoft.Json;
 
 namespace Marten.Util
 {
@@ -160,5 +162,26 @@ namespace Marten.Util
             return instance.GetType().Namespace == null;
         }
 
+        public static bool TryGetJsonAttributePropertyName(this MemberInfo member, out string propertyName)
+        {
+            var systemJsonProperty = member.GetCustomAttribute<JsonPropertyNameAttribute>();
+            var newtonSoftProperty = member.GetCustomAttribute<JsonPropertyAttribute>();
+
+            if (systemJsonProperty != null)
+            {
+                propertyName = systemJsonProperty.Name;
+                return true;
+            }
+            else if (newtonSoftProperty != null)
+            {
+                propertyName = newtonSoftProperty.PropertyName;
+                return true;
+            }
+            else
+            {
+                propertyName = null;
+                return false;
+            }
+        }
     }
 }
